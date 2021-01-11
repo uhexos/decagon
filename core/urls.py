@@ -16,11 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken import views
+from rest_framework import routers
+from currency import views
 
+router = routers.DefaultRouter()
+router.register('currency', views.CurrencyViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
+    path('', include(router.urls)),
     # path('auth/', include('rest_framework.urls', namespace='rest_framework')),
     # path('auth/obtain/', views.obtain_auth_token)
 ]
