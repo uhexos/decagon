@@ -21,6 +21,8 @@ from currency import views
 
 router = routers.DefaultRouter()
 router.register('currency', views.CurrencyViewSet)
+router.register('profile', views.ProfileViewSet)
+router.register('wallet', views.WalletViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
