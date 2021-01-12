@@ -41,8 +41,8 @@ class Wallet(models.Model):
     balance = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
 class Fund(models.Model):
-    from_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE)
-    to_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE)
+    from_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name="funded_from")
+    to_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name="funded_to")
     currency = models.ForeignKey(Currency,on_delete=models.CASCADE)
     amount =  models.DecimalField(max_digits=8, decimal_places=2, default=0)
     approved = models.BooleanField(default=False)
