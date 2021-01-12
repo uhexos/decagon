@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Currency, Profile, Wallet
+from .models import Currency, Profile, Wallet, Fund
 
 
 class CurrencySerializer(serializers.ModelSerializer):
@@ -21,5 +21,9 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ["id", "currency", "role"]
         read_only_fields = ['id']
 
+
 class FundSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = Fund
+        fields = "__all__"
+        read_only_fields = ['approved']

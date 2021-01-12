@@ -25,7 +25,7 @@ class Profile(models.Model):
     currency = models.ForeignKey(
         "Currency", on_delete=models.CASCADE, related_name="main_currency")
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="main_currency")
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     role = models.CharField(
         max_length=2,
         choices=ROLE_CHOICES,
@@ -41,9 +41,9 @@ class Wallet(models.Model):
     balance = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
 class Fund(models.Model):
-    from_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name="funded_from")
+    # from_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name="funded_from")
     to_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name="funded_to")
     currency = models.ForeignKey(Currency,on_delete=models.CASCADE)
-    amount =  models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    amount =  models.DecimalField(max_digits=8, decimal_places=2)
     approved = models.BooleanField(default=False)
 
