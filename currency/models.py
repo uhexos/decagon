@@ -47,3 +47,8 @@ class Fund(models.Model):
     amount =  models.DecimalField(max_digits=8, decimal_places=2)
     approved = models.BooleanField(default=False)
 
+class Withdrawal(models.Model):
+    from_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name="withdrawn_from")
+    currency = models.ForeignKey(Currency,on_delete=models.CASCADE)
+    amount =  models.DecimalField(max_digits=8, decimal_places=2)
+    approved = models.BooleanField(default=False)

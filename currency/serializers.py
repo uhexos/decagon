@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Currency, Profile, Wallet, Fund
+from .models import Currency, Profile, Wallet, Fund,Withdrawal
 
 
 class CurrencySerializer(serializers.ModelSerializer):
@@ -25,5 +25,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 class FundSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fund
+        fields = "__all__"
+        read_only_fields = ['approved']
+
+class WithdrawalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Withdrawal
         fields = "__all__"
         read_only_fields = ['approved']
