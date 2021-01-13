@@ -3,7 +3,7 @@ from rest_framework import status, viewsets
 from .models import Currency, Profile, Wallet, Fund, Withdrawal
 from .serializers import CurrencySerializer, ProfileSerializer, WalletSerializer, FundSerializer, WithdrawalSerializer
 from rest_framework.response import Response
-from .permissions import HasProfilePermission,IsAdmin
+from .permissions import HasProfilePermission
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 import requests
