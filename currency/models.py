@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.conf import settings
+from django.conf import settings 
+from decimal import Decimal
+from django.core.validators import MinValueValidator
 # Create your models here.
 
 
@@ -38,17 +40,17 @@ class Wallet(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wallet_owner")
     currency = models.ForeignKey(
         Currency, on_delete=models.CASCADE, related_name="wallet_currency")
-    balance = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    balance = models.DecimalField(max_digits=8, decimal_places=2, default=0, validators=[MinValueValidator(Decimal('0.01'))])
 
 class Fund(models.Model):
     # from_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name="funded_from")
-    to_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name="funded_to")
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="fund_owner")
     currency = models.ForeignKey(Currency,on_delete=models.CASCADE)
-    amount =  models.DecimalField(max_digits=8, decimal_places=2)
+    amount =  models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     approved = models.BooleanField(default=False)
 
 class Withdrawal(models.Model):
-    from_wallet = models.ForeignKey(Wallet,on_delete=models.CASCADE,related_name="withdrawn_from")
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="withdrawal_owner")
     currency = models.ForeignKey(Currency,on_delete=models.CASCADE)
-    amount =  models.DecimalField(max_digits=8, decimal_places=2)
+    amount =  models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     approved = models.BooleanField(default=False)

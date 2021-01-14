@@ -1,10 +1,12 @@
 from django.shortcuts import render
+from django.conf import settings
 from rest_framework import status, viewsets
 from .models import Currency, Profile, Wallet, Fund, Withdrawal
 from .serializers import CurrencySerializer, ProfileSerializer, WalletSerializer, FundSerializer, WithdrawalSerializer
 from rest_framework.response import Response
-from .permissions import HasProfilePermission
+from .permissions import CanCreateWallet, HasProfilePermission, IsAdmin, IsElite, IsNoob, IsFundOwner, IsWithdrawalOwner, CanUpdateProfile
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 import requests
 import json
@@ -14,15 +16,17 @@ import decimal
 class CurrencyViewSet(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
-    permission_classes = [HasProfilePermission]
+    permission_classes = [HasProfilePermission, IsAuthenticated]
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated, CanUpdateProfile]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+        # auto create wallet when a user makes a profile
         wallet = WalletSerializer(
             data={"currency": serializer.validated_data.get("currency").code})
         if wallet.is_valid():
@@ -32,8 +36,12 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class WalletViewSet(viewsets.ModelViewSet):
     queryset = Wallet.objects.all()
     serializer_class = WalletSerializer
-    permission_classes = [HasProfilePermission]
+    permission_classes = [IsAuthenticated,
+                          HasProfilePermission, CanCreateWallet]
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+        
     @action(detail=False, methods=['post'])
     def fund(self, request):
         serializer = FundSerializer(data=request.data)
@@ -43,9 +51,8 @@ class WalletViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors)
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated, HasProfilePermission, (IsAdmin | (IsElite & IsFundOwner))])
     def approve_funding(self, request):
-        print('hit')
         fund = get_object_or_404(Fund, id=request.POST.get("fund_id"))
         main_wallet = get_object_or_404(
             Wallet, user=request.user, currency=request.user.profile.currency)
@@ -75,7 +82,7 @@ class WalletViewSet(viewsets.ModelViewSet):
         ws = WalletSerializer(main_wallet)
         return Response(ws.data)
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated, HasProfilePermission, (IsNoob | IsElite)])
     def withdrawal(self, request):
         serializer = WithdrawalSerializer(data=request.data)
         if serializer.is_valid():
@@ -84,12 +91,12 @@ class WalletViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors)
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated, HasProfilePermission, ((IsNoob & IsWithdrawalOwner) | (IsElite & IsWithdrawalOwner))])
     def approve_withdrawal(self, request):
         withdrawal = get_object_or_404(
             Withdrawal, id=request.POST.get("withdrawal_id"))
         main_wallet = get_object_or_404(
-            Wallet, user=request.user, currency=request.user.profile.currency)
+            Wallet, user=withdrawal.from_user, currency=withdrawal.from_user.profile.currency)
         if withdrawal.approved == False:
             if request.user.profile.role == "NB":
                 if main_wallet.currency.code == withdrawal.currency.code:
@@ -105,7 +112,7 @@ class WalletViewSet(viewsets.ModelViewSet):
                     withdrawal.save()
             elif request.user.profile.role == "EL":
                 wallet = Wallet.objects.filter(
-                    user=request.user, currency=withdrawal.currency.code).first()
+                    user=withdrawal.from_user, currency=withdrawal.from_user.profile.currency).first()
                 if wallet != None:
                     wallet.balance -= withdrawal.amount
                     wallet.save()
@@ -125,7 +132,7 @@ class WalletViewSet(viewsets.ModelViewSet):
                 ws = WalletSerializer(wallet)
                 return Response(ws.data)
         else:
-            return Response({"detail":"Already approved"},status="204")
+            return Response({"detail": "Withdrawal Already approved"}, status="204")
 
     def convert_currency(self, from_currency, to_currency, amount):
         url = "http://data.fixer.io/api/latest?access_key=9f4cd464b7e8ff9e6f8594af5882eea1&format=1&symbols=%s,%s" % (
