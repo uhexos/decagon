@@ -65,4 +65,3 @@ class UserRegistrationTestCase(APITestCase):
         }
         response = self.client.post(self.url, user_data_2)
         self.assertEqual(400, response.status_code)
-
