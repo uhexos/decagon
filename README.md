@@ -36,7 +36,7 @@ Authorization: Token 96fb778e3a9b6db04740fa36a7894bf28ef364ab
 Available EndPoints
 --------------------------------------- 
 1)
-post auth/users/ register 
+Post auth/users/ register 
 Required data
 ---------------
 - username
@@ -45,28 +45,27 @@ Required data
 - re_password
 
 2)
-/auth/token/login/  login
+Post /auth/token/login/  login
 Required data and example input
 -------------------------------
 - username: admin
 - password: password
 
 3)
-post /auth/token/logout/ logout
+Post /auth/token/logout/ logout
 
 4)
-get /currency/  currency-list
+Get /currency/  currency-list
 
 5)
-post /profile/       currency.views.ProfileViewSet  
-- profile-create
+Post /profile/  profile-create
 - Required data and example input
 -------------------------------
 currency:NGN
 role:EL
 
 6)
-put/patch /profile/\<id\>/  currency.views.ProfileViewSet   profile-update
+Put/Patch /profile/\<id\>/  profile-update
 Required data and example input
 -------------------------------
 - currency:EUR
@@ -74,25 +73,27 @@ Required data and example input
 - id:9
 
 7)
-post /wallet/        currency.views.WalletViewSet    
-- wallet-create
+Post /wallet/   wallet-create
+Required data and example input
+-------------------------------
 - currency:AED
 
 8)
-post /wallet/fund/   currency.views.WalletViewSet   
-- wallet-fund
+Post /wallet/fund/ wallet-fund
+Required data and example input
+-------------------------------
 - currency:USD
 - amount: 100
 - to_wallet: 1
 
 9)
-post /wallet/approve_funding/        currency.views.WalletViewSet    wallet-approve-funding
+Post /wallet/approve_funding    wallet-approve-funding
 Required data and example input
 -------------------------------
 - fund_id:2
 
 10)
-post /wallet/withdrawal/     currency.views.WalletViewSet    wallet-withdrawal
+Post /wallet/withdrawal/   wallet-withdrawal
 Required data and example input
 -------------------------------
 - currency:ALL #can be any 3 character currency code
@@ -101,7 +102,7 @@ Required data and example input
 - user: 2
 
 11)
-post /wallet/approve_withdrawal/     currency.views.WalletViewSet    wallet-approve-withdrawal
+POST /wallet/approve_withdrawal/    wallet-approve-withdrawal
 Required data and example input
 -------------------------------
 - withdrawal_id:4
