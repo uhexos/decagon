@@ -21,6 +21,9 @@ admin   |    admin |01234Admin
 noob|   noob| 01234Noob
 elite|elite| 01234Elite
 
+All wallets are funded in NGN but can recieve all currencies.
+To view all available currencies consult the currency list endpoint
+
 **All endpoints exccept register require a token to access.
 Signup using the REGISTER endpoint**
 
@@ -49,7 +52,7 @@ Required data and example input
 - password: password
 
 3)
-get /auth/token/logout/ logout
+post /auth/token/logout/ logout
 
 4)
 get /currency/  currency-list
