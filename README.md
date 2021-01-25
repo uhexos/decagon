@@ -1,3 +1,9 @@
+Nwokorobia Ugochukwu Franklin 
+Uhexos@gmail.com 
+
+Technology: Django and Django rest framework(python) 
+Sqlite for testing and postgres in prod for database tasks. 
+
 # decagon
 
 Setup
