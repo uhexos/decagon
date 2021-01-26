@@ -43,6 +43,7 @@ Available EndPoints
 --------------------------------------- 
 1)
 Post auth/users/ register 
+
 Required data
 ---------------
 - username
